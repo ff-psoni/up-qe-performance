@@ -1,4 +1,4 @@
-# ✅ Step 1: Register `--env` Argument for Dynamic Host Selection
+# Register `--env` Argument for Dynamic Host Selection
 import json
 from pathlib import Path
 
