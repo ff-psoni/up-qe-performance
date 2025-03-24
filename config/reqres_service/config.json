@@ -1,0 +1,14 @@
+{
+    "stg":
+    {
+        "baseUrl": "https://reqres.in/"
+    },
+    "uat":
+    {
+        "baseUrl": "https://reqres.in/"
+    },
+    "prd":
+    {
+        "baseUrl": "https://reqres.in/"
+    }
+}

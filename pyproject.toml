@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "up-qe-performance"
+version = "0.1.0"
+description = "Locust framework to automate performance tests"
+authors = ["ff-psoni <87123872+ff-psoni@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "locust_tests"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+locust = "^2.33.2"
+requests = "^2.32.3"
+loguru = "^0.7.3"
+python-dotenv = "^1.0.1"
+
+[tool.black]
+line-length = 120
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
