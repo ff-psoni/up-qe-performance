@@ -35,3 +35,28 @@ def set_host(environment, **kwargs):
 class BaseTest(HttpUser):
     wait_time = between(1, 2)  # Simulate wait time between requests
     abstract = True  # marking it as abstract = True as we intend to subclass it
+
+    def log_request_failure(self, endpoint, resp, logger):
+        """
+        Logs request failure details and reports it to Locust.
+
+        :param endpoint: The API endpoint being tested.
+        :param resp: The response object from the request.
+        """
+        error_message = (
+            f"Request Failed | Endpoint: {endpoint} | "
+            f"Status: {resp.status_code} | Reason: {resp.text} | "
+            f"Response Time: {resp.elapsed.total_seconds()}s"
+        )
+
+        # Log the failure to Locust
+        resp.failure(error_message)
+
+        # Log in structured JSON format (useful for log aggregators)
+        logger.error({
+            "event": "request_failure",
+            "endpoint": endpoint,
+            "status_code": resp.status_code,
+            "reason": resp.text,
+            "response_time": resp.elapsed.total_seconds()
+        })
