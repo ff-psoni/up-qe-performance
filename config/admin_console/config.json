@@ -1,0 +1,14 @@
+{
+    "stg":
+    {
+        "baseUrl": "https://api.stg.uplight.com/admin-console-config-service"
+    },
+    "uat":
+    {
+        "baseUrl": "https://api.uat.uplight.com/admin-console-config-service"
+    },
+    "prd":
+    {
+        "baseUrl": "https://api.prd.uplight.com/admin-console-config-service"
+    }
+}
