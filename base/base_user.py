@@ -7,8 +7,8 @@ from locust import HttpUser, between, events
 
 @events.init_command_line_parser.add_listener
 def _(parser):
-    parser.add_argument("--env", type=str, help="Environment (dev/staging/prod)", default="dev", required=True)
-    parser.add_argument("--team", type=str, help="team name where config is stored", required=True)
+    parser.add_argument("--env", type=str, help="Environment (dev/stg/prod)", default="dev", required=True)
+    parser.add_argument("--team", type=str, help="team name where config is stored", required=True) #capability
 
 
 # Set `host` Before Locust Starts
@@ -35,6 +35,10 @@ def set_host(environment, **kwargs):
 class BaseTest(HttpUser):
     wait_time = between(1, 2)  # Simulate wait time between requests
     abstract = True  # marking it as abstract = True as we intend to subclass it
+
+    def get_access_token(self):
+        """To be implemented in service-specific classes."""
+        raise NotImplementedError("Each service should define its own get_access_token.")
 
     def log_request_failure(self, endpoint, resp, logger):
         """

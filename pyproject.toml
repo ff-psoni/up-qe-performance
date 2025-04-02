@@ -10,8 +10,8 @@ packages = [{include = "locust_tests"}]
 python = "^3.11"
 locust = "^2.33.2"
 requests = "^2.32.3"
-loguru = "^0.7.3"
 python-dotenv = "^1.0.1"
+google-cloud-secret-manager = "^2.23.2"
 
 [tool.black]
 line-length = 120
