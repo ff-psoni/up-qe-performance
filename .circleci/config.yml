@@ -1,0 +1,108 @@
+version: 2.1
+
+orbs:
+  up-deploy-orb: uplight/up-deploy-orb@2.9.0
+  gcp-cli: circleci/gcp-cli@3.1.1
+  slack: circleci/slack@4.13.2
+
+parameters:
+    client_branch:
+      type: string
+      default: "main"
+    target-path:
+      description: Path for report directory
+      type: string
+      default: reports
+    results-path:
+      description: Path to directory with test results
+      type: string
+      default: reports
+    artifact-path:
+      description: Path that will be used when storing result as artifact
+      type: string
+      default: reports
+    env:
+      description: Environment on which test needs to be executed
+      type: string
+      default: "STG"
+    slack-channel:
+      description: Slack channel to notification to be sent
+      type: string
+      default: ""
+    slack-mentions:
+      description: Mention users with space separated
+      type: string
+      default: "@slack.user" #Not a real user, just a dummy placeholder
+
+executors:
+  internal-uat:
+    resource_class: uplight/up-platform-uat
+
+jobs:
+  test:
+    executor: internal-uat
+    docker:
+      - image: cimg/python:3.11
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install Poetry
+          command: |
+            curl -sSL https://install.python-poetry.org | python3 -
+            export PATH="$HOME/.local/bin:$PATH"
+            poetry --version
+
+      - run:
+          name: Install dependencies
+          command: |
+            export PATH="$HOME/.local/bin:$PATH"
+            poetry install
+      
+      - run:
+          name: Run config_microservices
+          command: |
+            export PATH="$HOME/.local/bin:$PATH"
+
+            mkdir -p reports/config_microservices
+            
+            poetry run locust -f tests/admin_console/config_microservices/get_config.py --headless -u 10 -r 1 --client_id=$CLIENT_ID --client_secret=$CLIENT_SECRET --run-time 2m --stop-timeout 30s --html reports/config_microservices/locust_report.html --csv reports/config_microservices/locust_report 
+
+      # - store_artifacts:
+      #     path: << pipeline.parameters.target-path >>
+      #     destination: << pipeline.parameters.artifact-path >>
+
+      - store_artifacts:
+          path: reports/config_microservices
+          destination: locust/config_microservices
+
+
+      - run:
+          name: Build Artifact URL
+          command: |
+            echo 'export ARTIFACTS_URL="https://app.circleci.com/pipelines/github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/workflows/${CIRCLE_WORKFLOW_ID}/jobs/${CIRCLE_BUILD_NUM}/artifacts}"' >> $BASH_ENV
+
+      - slack/notify:
+          channel: << pipeline.parameters.slack-channel >>
+          event: always
+          custom: |
+            {
+              "text": "*✅ Performance testing completed *\nEnvironment: `STG`\nThe job has finished running.\n🔗 <${ARTIFACTS_URL}|Click here to view execution results and artifacts>"
+            }
+
+workflows:
+  nightly-build:
+    triggers:
+      - schedule:
+          cron: "00 2 * * *" # Runs every day at midnight (UTC)
+          filters:
+            branches:
+              only: main # Runs only on the main branch
+    jobs:
+      - test:
+          context:
+            - artifactory-pypi
+            - slack-secrets
+            - up-ac-pf-creds
+            - qa-context
