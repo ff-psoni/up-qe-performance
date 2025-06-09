@@ -8,7 +8,7 @@ from locust import HttpUser, between, events
 @events.init_command_line_parser.add_listener
 def _(parser):
     parser.add_argument("--env", type=str, help="Environment (dev/stg/prod)", default="dev", required=True)
-    parser.add_argument("--team", type=str, help="team name where config is stored", required=True) #capability
+    parser.add_argument("--capability", type=str, help="capability/project name where config is stored", required=True) #capability
 
 
 # Set `host` Before Locust Starts
@@ -16,9 +16,9 @@ def _(parser):
 def set_host(environment, **kwargs):
     """Set the host dynamically based on `--env`"""
     env = environment.parsed_options.env if hasattr(environment, "parsed_options") else "dev"
-    team = environment.parsed_options.team if hasattr(environment, "parsed_options") else None
+    capability = environment.parsed_options.capability if hasattr(environment, "parsed_options") else None
 
-    config_path = Path(__file__).resolve().parent.parent / f"config/{team}/config.json"
+    config_path = Path(__file__).resolve().parent.parent / f"config/{capability}/config.json"
 
     if not config_path.exists():
         raise FileNotFoundError(f"Config file not found: {config_path}")
@@ -28,7 +28,7 @@ def set_host(environment, **kwargs):
         config = json.load(file)
 
     BaseTest.host = config[env]["baseUrl"] # Set the host
-    print(f"🔹 Locust Host Set: {BaseTest.host}")
+    print(f"Locust Host Set: {BaseTest.host}")
 
 
 # Define BaseTest Class

@@ -2,7 +2,7 @@ import datetime
 import logging
 import os
 
-LOG_DIR = "reports"
+LOG_DIR = f"reports/"
 os.makedirs(LOG_DIR, exist_ok=True)
 
 

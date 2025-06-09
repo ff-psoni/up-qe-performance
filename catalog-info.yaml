@@ -1,0 +1,14 @@
+# See https://backstage.io/docs/features/software-catalog/descriptor-format/
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: up-qe-performance
+  annotations:
+    github.com/project-slug: Uplight-Inc/up-qe-experiments/up-qe-performance
+    lucid.app/arch-diagrams: 
+    uplightinc.atlassian.net/slo: 
+spec:
+  owner: group:Uplight-Inc/quality-engineering
+  type: library
+  lifecycle: experimental
