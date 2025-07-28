@@ -1,21 +1,21 @@
-name: 🧪 Matrix Filter Demo
+name: 🎯 Matrix Filter Example
 
 on:
   schedule:
-    - cron: '0 14 * * 1'
+    - cron: '0 14 * * 1'  # Every Monday at 2 PM UTC
   workflow_dispatch:
     inputs:
       service:
-        description: 'Service to test'
+        description: 'Service name (sample or user)'
         required: false
         default: ''
       env:
-        description: 'Environment to test'
+        description: 'Environment (stg or uat)'
         required: false
         default: ''
 
 jobs:
-  simulate:
+  filter_test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -31,21 +31,26 @@ jobs:
             env: uat
 
     steps:
-      - name: ⛔ Skip unmatched matrix (exit job)
-        if: ${{ github.event_name == 'workflow_dispatch' && (
-                (github.event.inputs.service != '' && github.event.inputs.service != matrix.service) ||
-                (github.event.inputs.env != '' && github.event.inputs.env != matrix.env)
-              ) }}
+      - name: 🔍 Print Debug Info
         run: |
-          echo "❌ Skipping job — matrix does not match inputs"
-          exit 1
-        continue-on-error: true  # Mark the job green despite exit
+          echo "Event:            ${{ github.event_name }}"
+          echo "Input: service = '${{ github.event.inputs.service }}'"
+          echo "Input: env     = '${{ github.event.inputs.env }}'"
+          echo "Matrix: service = '${{ matrix.service }}'"
+          echo "Matrix: env     = '${{ matrix.env }}'"
 
-      - name: 📢 Print Info
+      - name: ⛔ Skip if matrix doesn't match inputs
+        if: ${{ github.event_name == 'workflow_dispatch' && (
+              (github.event.inputs.service != '' && github.event.inputs.service != matrix.service) ||
+              (github.event.inputs.env != '' && github.event.inputs.env != matrix.env)
+            ) }}
         run: |
-          echo "🚀 Running job..."
-          echo "Triggered by: ${{ github.event_name }}"
-          echo "Input service: ${{ github.event.inputs.service }}"
-          echo "Input env:     ${{ github.event.inputs.env }}"
-          echo "Matrix service: ${{ matrix.service }}"
-          echo "Matrix env:     ${{ matrix.env }}"
+          echo "❌ Skipping this job: matrix doesn't match manual input"
+          exit 1
+        continue-on-error: true
+
+      - name: ✅ Job matches — do work here
+        run: |
+          echo "🚀 Running test for:"
+          echo "Service: ${{ matrix.service }}"
+          echo "Env:     ${{ matrix.env }}"
