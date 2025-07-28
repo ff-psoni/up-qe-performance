@@ -1,0 +1,31 @@
+on:
+  workflow_dispatch:
+
+jobs :
+  job-a :
+    name : Job to set message
+    runs-on : ubuntu-latest
+    outputs:
+      passed_message : ${{steps.set_msg.outputs.message}}
+    steps : 
+      - name : Set Message
+        id : set_msg
+        run : |
+          echo "Setting the message"
+          echo "message = Hello World" >> $GITHUB_OUTPUT
+
+  job-b:
+    name : Job to read output
+    runs-on : ubuntu-latest
+    needs : job-a
+    steps : 
+      - name : Output Message
+        run : | 
+          echo "$ {{needs.job-a.outputs.passed_message}}"
+          
+      
+    
+      
+      
+    
+    
