@@ -2,7 +2,7 @@ name : Output Show
 on:
   workflow_dispatch:
     inputs :
-      meesage :
+      message :
         description : Message to provide
         type : string 
         required : true
