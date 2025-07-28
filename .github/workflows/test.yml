@@ -12,7 +12,7 @@ jobs :
         id : set_msg
         run : |
           echo "Setting the message"
-          echo "message = Hello World" >> $GITHUB_OUTPUT
+          echo "message=Hello World" >> $GITHUB_OUTPUT
 
   job-b:
     name : Job to read output
