@@ -1,0 +1,48 @@
+name: 🧪 Matrix Filter Demo
+
+on:
+  schedule:
+    - cron: '0 14 * * 1'  # Mondays 2 PM UTC
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to test'
+        required: false
+        default: ''
+      env:
+        description: 'Environment to test'
+        required: false
+        default: ''
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - service: sample
+            env: stg
+          - service: sample
+            env: uat
+          - service: user
+            env: stg
+          - service: user
+            env: uat
+
+    # Core filtering logic
+    if: |
+      github.event_name == 'schedule' || (
+        (github.event.inputs.service == '' || github.event.inputs.service == matrix.service) &&
+        (github.event.inputs.env == '' || github.event.inputs.env == matrix.env)
+      )
+
+    steps:
+      - name: 📢 Print Info
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Input service: ${{ github.event.inputs.service }}"
+          echo "Input env:     ${{ github.event.inputs.env }}"
+          echo "Matrix service: ${{ matrix.service }}"
+          echo "Matrix env:     ${{ matrix.env }}"
+          echo "✅ This job ran because inputs matched matrix or it was scheduled!"
