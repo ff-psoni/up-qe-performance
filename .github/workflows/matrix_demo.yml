@@ -2,7 +2,7 @@ name: 🧪 Matrix Filter Demo
 
 on:
   schedule:
-    - cron: '0 14 * * 1'  # Mondays 2 PM UTC
+    - cron: '0 11 * * 1'  # Every Monday 2PM UTC
   workflow_dispatch:
     inputs:
       service:
@@ -30,14 +30,16 @@ jobs:
           - service: user
             env: uat
 
-    # Core filtering logic
-    if: |
-      github.event_name == 'schedule' || (
-        (github.event.inputs.service == '' || github.event.inputs.service == matrix.service) &&
-        (github.event.inputs.env == '' || github.event.inputs.env == matrix.env)
-      )
-
     steps:
+      - name: ⛔ Skip if inputs do not match matrix
+        if: ${{ github.event_name == 'workflow_dispatch' && (
+                  (github.event.inputs.service != '' && github.event.inputs.service != matrix.service) ||
+                  (github.event.inputs.env != '' && github.event.inputs.env != matrix.env)
+              ) }}
+        run: |
+          echo "❌ Skipping: matrix does not match workflow_dispatch inputs"
+          exit 0
+
       - name: 📢 Print Info
         run: |
           echo "Triggered by: ${{ github.event_name }}"
