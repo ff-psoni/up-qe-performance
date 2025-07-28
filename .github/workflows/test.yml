@@ -1,5 +1,12 @@
+name : Output Show
 on:
   workflow_dispatch:
+    inputs :
+      meesage :
+        description : Message to provide
+        type : string 
+        required : true
+        default : 'Default Message'
 
 jobs :
   job-a :
@@ -12,7 +19,7 @@ jobs :
         id : set_msg
         run : |
           echo "Setting the message"
-          echo "message=Hello World" >> $GITHUB_OUTPUT
+          echo "message=${{ github.event.inputs.message }}" >> $GITHUB_OUTPUT
 
   job-b:
     name : Job to read output
