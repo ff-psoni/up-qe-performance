@@ -21,7 +21,7 @@ jobs :
     steps : 
       - name : Output Message
         run : | 
-          echo "$ {{needs.job-a.outputs.passed_message}}"
+          echo "${{needs.job-a.outputs.passed_message}}"
           
       
     
