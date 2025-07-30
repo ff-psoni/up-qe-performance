@@ -18,6 +18,8 @@ jobs:
   
   check-control : 
     runs-on : ubuntu-latest
+    outputs:
+      enabled: ${{ steps.read_control.outputs.enabled }}
     steps :
       - name : Checkout Code
         uses : actions/checkout@v3
