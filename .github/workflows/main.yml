@@ -19,6 +19,8 @@ jobs:
   check-control : 
     runs-on : ubuntu-latest
     steps :
+      - name : Checkout Code
+        uses : actions/checkout@v3
       - name: Read the control mode
         id: read_control
         run: |
