@@ -43,6 +43,8 @@ jobs:
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
-          payload: |
-            channel: ${{ inputs.channel_id }}
-            text: ${{ inputs.message }} | ${{ needs.check-control.outputs.enabled }} 
+          payload: >-
+            {
+              "channel": "${{ inputs.channel_id }}",
+              "text": "${{ inputs.message }} | ${{ needs.check-control.outputs.enabled }}"
+            }
