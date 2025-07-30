@@ -19,18 +19,19 @@ jobs:
   check-control : 
     runs-on : ubuntu-latest
     steps :
-      - name: Checkout Code
-        id: ci_check
-        uses: actions/checkout@v4
-  
       - name: Read the control mode
+        id: read_control
         run: |
           CI_SYSTEM=$(grep 'ci:' .ci_control.yml | awk '{print $2}')
+          echo "Raw CI_SYSTEM value: '$CI_SYSTEM'"
           if [ "$CI_SYSTEM" == "github" ]; then 
             echo "CI in use is $CI_SYSTEM"
             echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "CI not supported: $CI_SYSTEM"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
           fi
-            
+                  
   slack-notify:
     needs : check-control
     runs-on: ubuntu-latest
