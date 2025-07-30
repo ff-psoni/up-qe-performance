@@ -1,4 +1,4 @@
-name: Slack Notify
+name: Slack Notify of CI Run
 
 on:
   workflow_dispatch:
@@ -12,8 +12,25 @@ on:
         required: true
         type: string
 
+
+
 jobs:
+  
+  check-control : 
+    runs-on : ubuntu-latest
+    steps : 
+      - name : Checkout Code
+        id : ci_check
+        uses : actions/checkout@v4
+      - name : Read the control mode
+        run : |
+          CI_SYSTEM = $ (grep 'ci:' .ci_control.yml | awk '{print $2}')
+          if ["$CI_SYSTEM" == "gihub"]; then 
+            echo "CI in use is $CI_SYSTEM"
+            echo "enabled = true" >> $GITHUB_OUTPUT
+          
   slack-notify:
+    needs : check-control
     runs-on: ubuntu-latest
     steps:
       - name: Send slack message
@@ -23,4 +40,4 @@ jobs:
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload: |
             channel: ${{ inputs.channel_id }}
-            text: ${{ inputs.message }}
+            text: ${{ inputs.message }} 
