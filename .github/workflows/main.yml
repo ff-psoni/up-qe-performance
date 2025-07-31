@@ -19,21 +19,20 @@ jobs:
   check-control : 
     runs-on : ubuntu-latest
     outputs:
-      enabled: ${{ steps.read_control.outputs.enabled }}
+      enabled: ${{ steps.set_output.outputs.enabled }}
     steps :
       - name : Checkout Code
         uses : actions/checkout@v3
       - name: Read the control mode
-        id: read_control
         run: |
           CI_SYSTEM=$(grep 'ci:' .ci_control.yml | awk '{print $2}')
           echo "Raw CI_SYSTEM value: '$CI_SYSTEM'"
           if [ "$CI_SYSTEM" == "github" ]; then 
             echo "CI in use is $CI_SYSTEM"
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "enabled=true" >> $GITHUB_OUTPUT
           else
             echo "CI not supported: $CI_SYSTEM"
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "enabled=false" >> $GITHUB_OUTPUT
           fi
       - name: Send slack message
         if : env.enabled == 'false'
@@ -46,6 +45,9 @@ jobs:
               "channel": "${{ inputs.channel_id }}",
               "text": "🚫 *GitHub Actions notice*: 'run-tests' was skipped. Reason: 'ci_control.yml' does not contain 'github'."
             }
+      - name : Set output
+        id: set_output
+        run: echo "enabled=${{ env.run_next }}" >> $GITHUB_OUTPUT
                   
   slack-notify:
     needs : check-control
