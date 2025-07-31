@@ -30,6 +30,7 @@ jobs:
           echo "Raw CI_SYSTEM value: '$CI_SYSTEM'"
           if [ "$CI_SYSTEM" == "github" ]; then 
             echo "CI in use is $CI_SYSTEM"
+            exit 0
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "CI not supported: $CI_SYSTEM"
