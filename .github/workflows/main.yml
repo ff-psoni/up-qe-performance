@@ -30,7 +30,6 @@ jobs:
           echo "Raw CI_SYSTEM value: '$CI_SYSTEM'"
           if [ "$CI_SYSTEM" == "github" ]; then 
             echo "CI in use is $CI_SYSTEM"
-            exit 0
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "CI not supported: $CI_SYSTEM"
@@ -40,6 +39,7 @@ jobs:
   slack-notify:
     needs : check-control
     runs-on: ubuntu-latest
+    if : needs.check-control.outputs.enabled = true
     steps:
       - name: Send slack message
         uses: slackapi/slack-github-action@v2.1.1
