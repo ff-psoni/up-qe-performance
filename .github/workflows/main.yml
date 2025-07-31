@@ -35,6 +35,17 @@ jobs:
             echo "CI not supported: $CI_SYSTEM"
             echo "enabled=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: Send slack message
+        if : env.enabled == 'false'
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: >-
+            {
+              "channel": "${{ inputs.channel_id }}",
+              "text": "🚫 *GitHub Actions notice*: 'run-tests' was skipped. Reason: 'ci_control.yml' does not contain 'github'."
+            }
                   
   slack-notify:
     needs : check-control
