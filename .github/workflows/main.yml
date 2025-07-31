@@ -47,7 +47,7 @@ jobs:
             }
       - name : Set output
         id: set_output
-        run: echo "enabled=${{ env.run_next }}" >> $GITHUB_OUTPUT
+        run: echo "enabled=${{ env.enabled }}" >> $GITHUB_OUTPUT
                   
   slack-notify:
     needs : check-control
